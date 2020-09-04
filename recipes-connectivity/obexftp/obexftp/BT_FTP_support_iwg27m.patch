@@ -1,0 +1,370 @@
+diff -Naur obexftp-0.24.2-Source.orig/apps/obexftp.c obexftp-0.24.2-Source/apps/obexftp.c
+--- obexftp-0.24.2-Source.orig/apps/obexftp.c	2019-09-09 18:52:37.212016887 +0530
++++ obexftp-0.24.2-Source/apps/obexftp.c	2019-09-09 18:57:36.419248085 +0530
+@@ -700,8 +700,7 @@
+ 				else p = optarg;
+ 				if (output_file) p = output_file;
+ 				/* Get file */
+-				ret = obexftp_get(cli, p, optarg);
+-				if (ret > 0 && c == 'G')
++				if (obexftp_get(cli, p, optarg) && c == 'G')
+ 					ret = obexftp_del(cli, optarg);
+ 				output_file = NULL;
+ 			}
+diff -Naur obexftp-0.24.2-Source.orig/apps/obexftpd.c obexftp-0.24.2-Source/apps/obexftpd.c
+--- obexftp-0.24.2-Source.orig/apps/obexftpd.c	2019-09-09 18:52:37.212016887 +0530
++++ obexftp-0.24.2-Source/apps/obexftpd.c	2019-09-09 19:03:56.723051937 +0530
+@@ -451,7 +451,6 @@
+ 				strcpy(type, (char *)hv.bs);
+ 			}
+ 			printf("%s() type:%s\n", __FUNCTION__, type);
+-			break;
+ 
+ 		case 0xbe: // user-defined inverse push
+ 			printf("%s() Found inverse push req\n", __FUNCTION__);
+@@ -529,10 +528,10 @@
+ 		
+ 		//composite the obex obejct
+ 		OBEX_ObjectSetRsp(object, OBEX_RSP_CONTINUE, OBEX_RSP_SUCCESS);
+-		hv.bq4 = xmldata->size;
+-		OBEX_ObjectAddHeader(handle, object, OBEX_HDR_LENGTH, hv, sizeof(uint32_t), 0);
+ 		hv.bs = (uint8_t *)xmldata->data;
+ 		OBEX_ObjectAddHeader(handle, object, OBEX_HDR_BODY, hv, xmldata->size, 0);
++		hv.bq4 = xmldata->size;
++		OBEX_ObjectAddHeader(handle, object, OBEX_HDR_LENGTH, hv, sizeof(uint32_t), 0);
+ 		//fprintf(stderr, "%s:%d:%s\n", __FILE__, __LINE__, __FUNCTION__);
+ 		FREE_RAWDATA_STREAM(xmldata);
+ 		//fprintf(stderr, "%s:%d:%s\n", __FILE__, __LINE__, __FUNCTION__);
+@@ -549,10 +548,10 @@
+ 		}
+ 
+ 		OBEX_ObjectSetRsp(object, OBEX_RSP_CONTINUE, OBEX_RSP_SUCCESS);
+-		hv.bq4 = file_size;
+-		OBEX_ObjectAddHeader(handle, object, OBEX_HDR_LENGTH, hv, sizeof(uint32_t), 0);
+ 		hv.bs = buf;
+ 		OBEX_ObjectAddHeader(handle, object, OBEX_HDR_BODY, hv, file_size, 0);
++		hv.bq4 = file_size;
++		OBEX_ObjectAddHeader(handle, object, OBEX_HDR_LENGTH, hv, sizeof(uint32_t), 0);
+ 	}
+ 	else
+ 	{
+@@ -653,7 +652,7 @@
+ 				free(name);
+ 			}
+ 			if( (name = malloc(hlen / 2)))	{
+-				UnicodeToChar((uint8_t *)name, hv.bs, hlen);
++				OBEX_UnicodeToChar((uint8_t *)name, hv.bs, hlen);
+ 				fprintf(stderr, "put file name: %s\n", name);
+ 			}
+ 			break;
+diff -Naur obexftp-0.24.2-Source.orig/obexftp/obexftp_io.c obexftp-0.24.2-Source/obexftp/obexftp_io.c
+--- obexftp-0.24.2-Source.orig/obexftp/obexftp_io.c	2019-09-09 18:52:37.216016905 +0530
++++ obexftp-0.24.2-Source/obexftp/obexftp_io.c	2019-09-09 20:25:37.342115617 +0530
+@@ -92,7 +92,7 @@
+ 		return NULL;
+ 	}
+ 
+-	ucname_len = CharToUnicode(ucname, (uint8_t*)remotename, ucname_len);
++	ucname_len = OBEX_CharToUnicode(ucname, (uint8_t*)remotename, ucname_len);
+ 
+ 	hv.bs = ucname;
+ 	(void ) OBEX_ObjectAddHeader(obex, object, OBEX_HDR_NAME, hv, ucname_len, 0);
+diff -Naur obexftp-0.24.2-Source.orig/obexftp/object.c obexftp-0.24.2-Source/obexftp/object.c
+--- obexftp-0.24.2-Source.orig/obexftp/object.c	2019-09-09 18:52:37.216016905 +0530
++++ obexftp-0.24.2-Source/obexftp/object.c	2019-09-09 20:12:06.617391346 +0530
+@@ -100,7 +100,7 @@
+ 		        return NULL;
+ 		}
+ 
+-		ucname_len = CharToUnicode(ucname, (uint8_t*)name, ucname_len);
++		ucname_len = OBEX_CharToUnicode(ucname, (uint8_t*)name, ucname_len);
+ 
+ 		hv.bs = (const uint8_t *) ucname;
+ 		(void) OBEX_ObjectAddHeader(obex, object, OBEX_HDR_NAME, hv, ucname_len, OBEX_FL_FIT_ONE_PACKET);
+@@ -212,7 +212,7 @@
+ 	        return NULL;
+ 	}
+ 
+-        ucname_len = CharToUnicode(ucname, (uint8_t*)name, ucname_len);
++        ucname_len = OBEX_CharToUnicode(ucname, (uint8_t*)name, ucname_len);
+ 
+         hv.bs = (const uint8_t *) ucname;
+         (void) OBEX_ObjectAddHeader(obex, object, OBEX_HDR_NAME, hv, ucname_len, OBEX_FL_FIT_ONE_PACKET);
+@@ -265,7 +265,7 @@
+ 			(void) OBEX_ObjectDelete(obex, object);
+ 			return NULL;
+ 		}
+-		ucname_len = CharToUnicode(ucname, (uint8_t*)name, ucname_len);
++		ucname_len = OBEX_CharToUnicode(ucname, (uint8_t*)name, ucname_len);
+ 
+ 		/* apparently the empty name header is meant to be really empty... */
+ 		if (ucname_len == 2)
+diff -Naur obexftp-0.24.2-Source.orig/obexftp/unicode.c obexftp-0.24.2-Source/obexftp/unicode.c
+--- obexftp-0.24.2-Source.orig/obexftp/unicode.c	2019-09-09 18:52:37.216016905 +0530
++++ obexftp-0.24.2-Source/obexftp/unicode.c	2019-09-09 20:13:05.465761584 +0530
+@@ -56,6 +56,49 @@
+ 
+ 	\note This is a quick hack until OpenOBEX is iconv-ready.
+  */
++
++int OBEX_UnicodeToChar(uint8_t *c, const uint8_t *uc, int size)
++{
++      int n;
++
++      if (uc == NULL || c == NULL)
++              return -1;
++
++      /* Make sure buffer is big enough! */
++      for (n = 0; uc[n*2+1] != 0; n++);
++
++      if (n >= size)
++              return -1;
++
++      for (n = 0; uc[n*2+1] != 0; n++)
++              c[n] = uc[n*2+1];
++      c[n] = 0;
++
++      return 0;
++}
++
++int OBEX_CharToUnicode(uint8_t *uc, const uint8_t *c, int size)
++{
++      int len, n;
++
++      if (uc == NULL || c == NULL)
++              return -1;
++
++      len = n = strlen((char *) c);
++      if (n*2+2 > size)
++              return -1;
++
++      uc[n*2+1] = 0;
++      uc[n*2] = 0;
++
++      while (n--) {
++              uc[n*2+1] = c[n];
++              uc[n*2] = 0;
++      }
++
++      return (len * 2) + 2;
++}
++
+ int CharToUnicode(uint8_t *uc, const uint8_t *c, int size)
+ {
+ #ifdef _WIN32 /* no need for iconv */
+@@ -79,9 +122,10 @@
+ #ifdef HAVE_ICONV
+ 	iconv_t utf16;
+ 	size_t ni, no, nrc;
++	int ret;
+ 	/* avoid type-punned dereferecing (breaks strict aliasing) */
+-	ICONV_CONST char *cc = (ICONV_CONST char *)c;
+-	char *ucc = (char *)uc;
++	char *cc = c;
++	char *ucc = uc;
+ 
+         return_val_if_fail(uc != NULL, -1);
+         return_val_if_fail(c != NULL, -1);
+@@ -91,7 +135,7 @@
+ 	no = size;
+ 	utf16 = iconv_open("UTF-16BE", "UTF-8");
+        	nrc = iconv(utf16, &cc, &ni, &ucc, &no);
+-		(void)iconv_close(utf16);
++		ret = iconv_close(utf16);
+        	if (nrc == (size_t)(-1)) {
+        		DEBUG(3, "Iconv from UTF-8 conversion error: '%s'\n", cc);
+        	} else {
+@@ -101,13 +145,13 @@
+ 	/* try current locale charset to UTF-16BE */
+ 	setlocale(LC_CTYPE, "");
+ 	DEBUG(2, "Iconv from locale \"%s\"\n", locale_charset);
+-	cc = (ICONV_CONST char *)c;
+-	ucc = (char *)uc;
++	cc = c;
++	ucc = uc;
+ 	ni = strlen(cc) + 1;
+ 	no = size;
+ 	utf16 = iconv_open("UTF-16BE", locale_charset);
+        	nrc = iconv(utf16, &cc, &ni, &ucc, &no);
+-		(void)iconv_close(utf16);
++		ret = iconv_close(utf16);
+        	if (nrc == (size_t)(-1)) {
+        		DEBUG(3, "Iconv from locale conversion error: '%s'\n", cc);
+        	} else {
+@@ -115,13 +159,13 @@
+ 	}
+ 
+ 	/* fallback to ISO-8859-1 to UTF-16BE (every byte is valid here) */
+-	cc = (ICONV_CONST char *)c;
+-	ucc = (char *)uc;
++	cc = c;
++	ucc = uc;
+ 	ni = strlen(cc) + 1;
+ 	no = size;
+ 	utf16 = iconv_open("UTF-16BE", "ISO-8859-1");
+        	nrc = iconv(utf16, &cc, &ni, &ucc, &no);
+-		(void)iconv_close(utf16);
++		ret = iconv_close(utf16);
+        	if (nrc == (size_t)(-1)) {
+        		DEBUG(2, "Iconv internal conversion error: '%s'\n", cc);
+ 		return -1;
+@@ -129,24 +173,7 @@
+ 
+ 	return size-no;
+ #else /* HAVE_ICONV */
+-	int len, n;
+-
+-	if (uc == NULL || c == NULL)
+-		return -1;
+-
+-	len = n = strlen((char *) c);
+-	if (n*2+2 > size)
+-		return -1;
+-
+-	uc[n*2+1] = 0;
+-	uc[n*2] = 0;
+-
+-	while (n--) {
+-		uc[n*2+1] = c[n];
+-		uc[n*2] = 0;
+-	}
+-
+-	return (len * 2) + 2;
++	return OBEX_CharToUnicode(uc, c, size);
+ #endif /* HAVE_ICONV */
+ 
+ #endif /* _WIN32 */
+@@ -186,9 +213,10 @@
+ #ifdef HAVE_ICONV
+ 	iconv_t utf16;
+ 	size_t ni, no, nrc;
++	int ret;
+ 	/* avoid type-punned dereferecing (breaks strict aliasing) */
+-	char *cc = (char *)c;
+-	ICONV_CONST char *ucc = (ICONV_CONST char *)uc;
++	char *cc = c;
++	char *ucc = uc;
+ 
+         return_val_if_fail(uc != NULL, -1);
+         return_val_if_fail(c != NULL, -1);
+@@ -201,28 +229,13 @@
+ 	no = size;
+ 	utf16 = iconv_open(locale_charset, "UTF-16BE");
+        	nrc = iconv(utf16, &ucc, &ni, &cc, &no);
+-		(void)iconv_close(utf16);
++		ret = iconv_close(utf16);
+        	if (nrc == (size_t)(-1)) {
+        		DEBUG(2, "Iconv from locale conversion error: '%s'\n", cc);
+ 	}
+ 	return size-no;
+ #else /* HAVE_ICONV */
+-	int n;
+-
+-	if (uc == NULL || c == NULL)
+-		return -1;
+-
+-	/* Make sure buffer is big enough! */
+-	for (n = 0; uc[n*2+1] != 0; n++);
+-
+-	if (n >= size)
+-		return -1;
+-
+-	for (n = 0; uc[n*2+1] != 0; n++)
+-		c[n] = uc[n*2+1];
+-	c[n] = 0;
+-
+-	return 0;
++	return OBEX_UnicodeToChar(c, uc, size);
+ #endif /* HAVE_ICONV */
+ 
+ #endif /* _WIN32 */
+@@ -260,9 +273,10 @@
+ #ifdef HAVE_ICONV
+ 	iconv_t utf8;
+ 	size_t ni, no, nrc;
++	int ret;
+ 	/* avoid type-punned dereferecing (breaks strict aliasing) */
+-	char *cc = (char *)c;
+-	ICONV_CONST char *ucc = (ICONV_CONST char *)uc;
++	char *cc = c;
++	char *ucc = uc;
+ 
+         return_val_if_fail(uc != NULL, -1);
+         return_val_if_fail(c != NULL, -1);
+@@ -273,7 +287,7 @@
+ 	no = size;
+ 	utf8 = iconv_open(locale_charset, "UTF-8");
+        	nrc = iconv(utf8, &ucc, &ni, &cc, &no);
+-		(void)iconv_close(utf8);
++		ret = iconv_close(utf8);
+        	if (nrc != (size_t)(-1)) {
+        		DEBUG(2, "Iconv from locale conversion error: '%s'\n", cc);
+        	}
+diff -Naur obexftp-0.24.2-Source.orig/obexftp/unicode.h obexftp-0.24.2-Source/obexftp/unicode.h
+--- obexftp-0.24.2-Source.orig/obexftp/unicode.h	2019-09-09 18:52:37.216016905 +0530
++++ obexftp-0.24.2-Source/obexftp/unicode.h	2019-09-09 20:27:24.510704547 +0530
+@@ -28,6 +28,9 @@
+ extern "C" {
+ #endif
+ 
++int OBEX_UnicodeToChar(uint8_t *c, const uint8_t *uc, int size);
++int OBEX_CharToUnicode(uint8_t *uc, const uint8_t *c, int size);
++
+ int CharToUnicode(uint8_t *uc, const uint8_t *c, int size);
+ int UnicodeToChar(uint8_t *c, const uint8_t *uc, int size);
+ int Utf8ToChar(uint8_t *c, const uint8_t *uc, int size);
+diff -Naur obexftp-0.24.2-Source.orig/.pc/Remove_some_printf_in_obexftpd.patch/apps/obexftpd.c obexftp-0.24.2-Source/.pc/Remove_some_printf_in_obexftpd.patch/apps/obexftpd.c
+--- obexftp-0.24.2-Source.orig/.pc/Remove_some_printf_in_obexftpd.patch/apps/obexftpd.c	2019-09-09 18:52:37.212016887 +0530
++++ obexftp-0.24.2-Source/.pc/Remove_some_printf_in_obexftpd.patch/apps/obexftpd.c	2019-09-09 20:13:44.514003716 +0530
+@@ -334,7 +334,7 @@
+ 			if (0 < hlen)
+ 			{
+ 				if( (name = malloc(hlen / 2)))	{
+-					UnicodeToChar((uint8_t*)name, hv.bs, hlen);
++					OBEX_UnicodeToChar((uint8_t*)name, hv.bs, hlen);
+ 					printf("name:%s\n", name);
+ 				}
+ 			}
+@@ -441,7 +441,7 @@
+ 		case OBEX_HDR_NAME:
+ 			printf("%s() Found name\n", __FUNCTION__);
+ 			if( (name = malloc(hlen / 2)))	{
+-				UnicodeToChar((uint8_t*)name, hv.bs, hlen);
++				OBEX_UnicodeToChar((uint8_t*)name, hv.bs, hlen);
+ 				printf("name:%s\n", name);
+ 			}
+ 			break;
+@@ -451,7 +451,6 @@
+ 				strcpy(type, (char *)hv.bs);
+ 			}
+ 			printf("%s() type:%s\n", __FUNCTION__, type);
+-			break;
+ 
+ 		case 0xbe: // user-defined inverse push
+ 			printf("%s() Found inverse push req\n", __FUNCTION__);
+@@ -529,10 +528,10 @@
+ 		
+ 		//composite the obex obejct
+ 		OBEX_ObjectSetRsp(object, OBEX_RSP_CONTINUE, OBEX_RSP_SUCCESS);
+-		hv.bq4 = xmldata->size;
+-		OBEX_ObjectAddHeader(handle, object, OBEX_HDR_LENGTH, hv, sizeof(uint32_t), 0);
+ 		hv.bs = (uint8_t *)xmldata->data;
+ 		OBEX_ObjectAddHeader(handle, object, OBEX_HDR_BODY, hv, xmldata->size, 0);
++		hv.bq4 = xmldata->size;
++		OBEX_ObjectAddHeader(handle, object, OBEX_HDR_LENGTH, hv, sizeof(uint32_t), 0);
+ 		//fprintf(stderr, "%s:%d:%s\n", __FILE__, __LINE__, __FUNCTION__);
+ 		FREE_RAWDATA_STREAM(xmldata);
+ 		//fprintf(stderr, "%s:%d:%s\n", __FILE__, __LINE__, __FUNCTION__);
+@@ -549,10 +548,10 @@
+ 		}
+ 
+ 		OBEX_ObjectSetRsp(object, OBEX_RSP_CONTINUE, OBEX_RSP_SUCCESS);
+-		hv.bq4 = file_size;
+-		OBEX_ObjectAddHeader(handle, object, OBEX_HDR_LENGTH, hv, sizeof(uint32_t), 0);
+ 		hv.bs = buf;
+ 		OBEX_ObjectAddHeader(handle, object, OBEX_HDR_BODY, hv, file_size, 0);
++		hv.bq4 = file_size;
++		OBEX_ObjectAddHeader(handle, object, OBEX_HDR_LENGTH, hv, sizeof(uint32_t), 0);
+ 	}
+ 	else
+ 	{

@@ -1,0 +1,14 @@
+diff -Naur A/weston.ini B/weston.ini
+--- A/weston.ini	2020-09-02 20:08:48.910797764 +0530
++++ B/weston.ini	2020-09-02 20:09:42.063092652 +0530
+@@ -11,6 +11,10 @@
+ [libinput]
+ touchscreen_calibrator=true
+ 
++[output]
++name=DSI-1
++transform=180
++
+ #[output]
+ #name=HDMI-A-1
+ #mode=1920x1080@60
