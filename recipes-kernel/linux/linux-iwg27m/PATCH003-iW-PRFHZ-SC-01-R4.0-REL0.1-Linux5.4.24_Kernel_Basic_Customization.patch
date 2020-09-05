@@ -4050,7 +4050,7 @@ diff -Naur A/drivers/gpio/Makefile B/drivers/gpio/Makefile
  obj-$(CONFIG_GPIO_OMAP)			+= gpio-omap.o
 diff -Naur A/drivers/gpu/drm/bridge/cadence/cdns-hdmi-core.c B/drivers/gpu/drm/bridge/cadence/cdns-hdmi-core.c
 --- A/drivers/gpu/drm/bridge/cadence/cdns-hdmi-core.c	2020-08-13 11:41:40.390903724 +0530
-+++ B/drivers/gpu/drm/bridge/cadence/cdns-hdmi-core.c	2020-08-27 18:44:23.823560971 +0530
++++ B/drivers/gpu/drm/bridge/cadence/cdns-hdmi-core.c	2020-09-05 13:17:28.018223671 +0530
 @@ -246,6 +246,55 @@
  	}
  }
@@ -4107,7 +4107,7 @@ diff -Naur A/drivers/gpu/drm/bridge/cadence/cdns-hdmi-core.c B/drivers/gpu/drm/b
  static int cdns_hdmi_connector_get_modes(struct drm_connector *connector)
  {
  	struct cdns_mhdp_device *mhdp =
-@@ -253,6 +302,31 @@
+@@ -253,6 +302,30 @@
  	int num_modes = 0;
  	struct edid *edid;
  
@@ -4117,7 +4117,6 @@ diff -Naur A/drivers/gpu/drm/bridge/cadence/cdns-hdmi-core.c B/drivers/gpu/drm/b
 +		edid = drm_do_get_edid(&mhdp->connector.base,
 +				cdns_hdmi_get_edid_block, mhdp);
 +		if (edid) {
-+			printk("\n IWG Inside EDID \n");
 +			dev_info(mhdp->dev, "%x,%x,%x,%x,%x,%x,%x,%x\n",
 +					edid->header[0], edid->header[1],
 +					edid->header[2], edid->header[3],
@@ -4139,7 +4138,7 @@ diff -Naur A/drivers/gpu/drm/bridge/cadence/cdns-hdmi-core.c B/drivers/gpu/drm/b
  	edid = drm_do_get_edid(&mhdp->connector.base,
  				   cdns_hdmi_get_edid_block, mhdp);
  	if (edid) {
-@@ -265,6 +339,7 @@
+@@ -265,6 +338,7 @@
  		num_modes = drm_add_edid_modes(connector, edid);
  		kfree(edid);
  	}
@@ -4147,7 +4146,7 @@ diff -Naur A/drivers/gpu/drm/bridge/cadence/cdns-hdmi-core.c B/drivers/gpu/drm/b
  
  	if (num_modes == 0)
  		DRM_ERROR("Invalid edid\n");
-@@ -361,10 +436,29 @@
+@@ -361,10 +435,29 @@
  	u32 vic;
  	int ret;
  
@@ -4177,7 +4176,7 @@ diff -Naur A/drivers/gpu/drm/bridge/cadence/cdns-hdmi-core.c B/drivers/gpu/drm/b
  
  	/* MAX support pixel clock rate 594MHz */
  	if (mode->clock > 594000)
-@@ -674,6 +768,11 @@
+@@ -674,6 +767,11 @@
  		return ret;
  	}
  
