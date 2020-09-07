@@ -1036,7 +1036,7 @@ diff -Naur A/arch/arm/mach-imx/imx8/Kconfig B/arch/arm/mach-imx/imx8/Kconfig
  source "board/freescale/imx8qxp_val/Kconfig"
 diff -Naur A/board/freescale/imx8qm_iwg27m/imx8qm_iwg27m.c B/board/freescale/imx8qm_iwg27m/imx8qm_iwg27m.c
 --- A/board/freescale/imx8qm_iwg27m/imx8qm_iwg27m.c	1970-01-01 05:30:00.000000000 +0530
-+++ B/board/freescale/imx8qm_iwg27m/imx8qm_iwg27m.c	2020-08-27 16:28:22.005456859 +0530
++++ B/board/freescale/imx8qm_iwg27m/imx8qm_iwg27m.c	2020-09-07 15:10:06.431236250 +0530
 @@ -0,0 +1,666 @@
 +/*
 + * Copyright 2020 iWave System Technologies Pvt Ltd.
@@ -1149,7 +1149,7 @@ diff -Naur A/board/freescale/imx8qm_iwg27m/imx8qm_iwg27m.c B/board/freescale/imx
 +		return;
 +	}
 +
-+	dm_gpio_set_dir_flags(&pdn_en_desc, GPIOD_IS_OUT);
++	dm_gpio_set_dir_flags(&pdn_en_desc, GPIOD_IS_OUT | GPIOD_IS_OUT_ACTIVE);
 +
 +	ret = dm_gpio_lookup_name("GPIO2_30", &core_en_desc);
 +	if (ret) {
@@ -1163,7 +1163,7 @@ diff -Naur A/board/freescale/imx8qm_iwg27m/imx8qm_iwg27m.c B/board/freescale/imx
 +		return;
 +	}
 +
-+	dm_gpio_set_dir_flags(&core_en_desc, GPIOD_IS_OUT);
++	dm_gpio_set_dir_flags(&core_en_desc, GPIOD_IS_OUT | GPIOD_IS_OUT_ACTIVE);
 +
 +	dm_gpio_set_value(&pdn_en_desc, 1);
 +	mdelay(5);
@@ -3092,7 +3092,7 @@ diff -Naur A/env/env.c B/env/env.c
  
 diff -Naur A/include/configs/imx8qm_iwg27m.h B/include/configs/imx8qm_iwg27m.h
 --- A/include/configs/imx8qm_iwg27m.h	1970-01-01 05:30:00.000000000 +0530
-+++ B/include/configs/imx8qm_iwg27m.h	2020-09-02 19:12:44.892703969 +0530
++++ B/include/configs/imx8qm_iwg27m.h	2020-09-07 16:05:11.348603255 +0530
 @@ -0,0 +1,335 @@
 +/*
 + * Copyright (C) 2020 iWave System Technologies Pvt Ltd.
@@ -3431,7 +3431,7 @@ diff -Naur A/include/configs/imx8qm_iwg27m.h B/include/configs/imx8qm_iwg27m.h
 +#endif /* __IMX8QM_IWG27M_H */
 diff -Naur A/include/configs/imx8qm_iwg27m_uuu.h B/include/configs/imx8qm_iwg27m_uuu.h
 --- A/include/configs/imx8qm_iwg27m_uuu.h	1970-01-01 05:30:00.000000000 +0530
-+++ B/include/configs/imx8qm_iwg27m_uuu.h	2020-08-17 17:09:19.874250761 +0530
++++ B/include/configs/imx8qm_iwg27m_uuu.h	2020-09-07 16:05:23.620654750 +0530
 @@ -0,0 +1,18 @@
 +/*
 + * Copyright (C) 2020 iWave System Technologies Pvt Ltd.

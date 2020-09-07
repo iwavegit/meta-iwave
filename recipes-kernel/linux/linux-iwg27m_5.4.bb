@@ -15,7 +15,7 @@ KERNEL_BRANCH ?= "imx_5.4.24_2.1.0"
 LOCALVERSION = "-2.1.0"
 KERNEL_SRC ?= "git://source.codeaurora.org/external/imx/linux-imx.git;protocol=https"
 SRC_URI = "${KERNEL_SRC};branch=${KERNEL_BRANCH} \
-	file://PATCH003-iW-PRFHZ-SC-01-R4.0-REL0.1-Linux5.4.24_Kernel_Basic_Customization.patch"
+	file://PATCH002-iW-PRFHZ-SC-01-R4.0-REL0.1-Linux5.4.24_Kernel_Basic_Customization.patch"
 
 SRCREV = "babac008e5cf168abca1a85bda2e8071ca27a5c0"
 

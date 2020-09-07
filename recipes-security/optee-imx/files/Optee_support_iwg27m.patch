@@ -1,24 +1,23 @@
 diff -Naur A/core/arch/arm/plat-imx/conf.mk B/core/arch/arm/plat-imx/conf.mk
 --- A/core/arch/arm/plat-imx/conf.mk	2020-09-02 11:06:09.222422790 +0530
-+++ B/core/arch/arm/plat-imx/conf.mk	2020-09-03 21:03:16.527321596 +0530
-@@ -72,6 +72,9 @@
++++ B/core/arch/arm/plat-imx/conf.mk	2020-09-07 16:20:06.852063956 +0530
+@@ -72,6 +72,8 @@
  
  mx8qm-flavorlist = \
  	mx8qmmek \
-+	mx8qm_iwg27m \
-+	mx8qm_iwg27m_8gb \
 +	mx8qm-iwg27m \
++	mx8qm-iwg27m-8gb \
  
  mx8qx-flavorlist = \
  	mx8qxpmek \
-@@ -344,9 +347,9 @@
+@@ -344,9 +346,9 @@
  $(call force,CFG_CORE_LARGE_PHYS_ADDR,y)
  endif
  
 -ifneq (,$(filter $(PLATFORM_FLAVOR),mx8qxpmek mx8qmmek))
 -CFG_DDR_SIZE ?= 0x80000000
 -CFG_UART_BASE ?= UART0_BASE
-+ifneq (,$(filter $(PLATFORM_FLAVOR),mx8qxpmek mx8qmmek mx8qm-iwg27m mx8qm_iwg27m mx8qm_iwg27m_8gb))
++ifneq (,$(filter $(PLATFORM_FLAVOR),mx8qxpmek mx8qmmek mx8qm-iwg27m mx8qm-iwg27m-8gb))
 +CFG_DDR_SIZE ?= 0x40000000
 +CFG_UART_BASE ?= UART4_BASE
  endif
