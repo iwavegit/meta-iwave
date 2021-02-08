@@ -13,11 +13,10 @@ DEPENDS_append = " dtc-native"
 LICENSE = "GPLv2+"
 LIC_FILES_CHKSUM = "file://Licenses/gpl-2.0.txt;md5=b234ee4d69f5fce4486a80fdaf4a4263"
 
-UBOOT_SRC ?= "git://source.codeaurora.org/external/imx/uboot-imx.git;protocol=https"
-SRCBRANCH = "imx_v2020.04_5.4.24_2.1.0"
-SRC_URI = "${UBOOT_SRC};branch=${SRCBRANCH} \
-	     file://PATCH001-iW-PRFHZ-SC-01-R4.0-REL0.1-Linux5.4.24_Uboot_Basic_Customization.patch"
-SRCREV = "4979a99482f7e04a3c1f4fb55e3182395ee8f710"
+UBOOT_SRC ?= "https://github.com/iwavegit/u-boot-iwg27m.git;protocol=https"
+SRCBRANCH = "IWG27M-R4.0-REL0.2"
+SRC_URI = "${UBOOT_SRC};branch=${SRCBRANCH}"
+SRCREV = "61470b59b59dc99539680202b79f6eb635248dd1"
 
 S = "${WORKDIR}/git"
 

@@ -11,13 +11,12 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=bbea815ee2795b2f4230826c0c6b8814"
 
 DEPENDS += "lzop-native bc-native"
 
-KERNEL_BRANCH ?= "imx_5.4.24_2.1.0"
+KERNEL_BRANCH ?= "IWG27M-R4.0-REL0.2"
 LOCALVERSION = "-2.1.0"
-KERNEL_SRC ?= "git://source.codeaurora.org/external/imx/linux-imx.git;protocol=https"
-SRC_URI = "${KERNEL_SRC};branch=${KERNEL_BRANCH} \
-	file://PATCH002-iW-PRFHZ-SC-01-R4.0-REL0.1-Linux5.4.24_Kernel_Basic_Customization.patch"
+KERNEL_SRC ?= "https://github.com/iwavegit/linux-iwg27m.git;protocol=https"
+SRC_URI = "${KERNEL_SRC};branch=${KERNEL_BRANCH}"
 
-SRCREV = "babac008e5cf168abca1a85bda2e8071ca27a5c0"
+SRCREV = "52b69e8c17aa90eda28488ee2b0993bd33638069"
 
 FILES_${KERNEL_PACKAGE_NAME}-base += "${nonarch_base_libdir}/modules/${KERNEL_VERSION}/modules.builtin.modinfo "
 
