@@ -13,7 +13,7 @@ DEPENDS += "lzop-native bc-native"
 
 KERNEL_BRANCH ?= "IWG27M-R4.0-REL0.2"
 LOCALVERSION = "-2.1.0"
-KERNEL_SRC ?= "https://github.com/iwavegit/linux-iwg27m.git;protocol=https"
+KERNEL_SRC ?= "git://github.com/iwavegit/linux-iwg27m.git;protocol=https"
 SRC_URI = "${KERNEL_SRC};branch=${KERNEL_BRANCH}"
 
 SRCREV = "52b69e8c17aa90eda28488ee2b0993bd33638069"
