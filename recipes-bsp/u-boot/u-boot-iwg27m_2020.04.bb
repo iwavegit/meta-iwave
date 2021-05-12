@@ -14,9 +14,9 @@ LICENSE = "GPLv2+"
 LIC_FILES_CHKSUM = "file://Licenses/gpl-2.0.txt;md5=b234ee4d69f5fce4486a80fdaf4a4263"
 
 UBOOT_SRC ?= "git://github.com/iwavegit/u-boot-iwg27m.git;protocol=https"
-SRCBRANCH = "IWG27M-R4.0-REL0.2"
+SRCBRANCH = "IWG27M-R4.5-REL0.2"
 SRC_URI = "${UBOOT_SRC};branch=${SRCBRANCH}"
-SRCREV = "61470b59b59dc99539680202b79f6eb635248dd1"
+SRCREV = "2faceafeda8292125ad732c3326e5e8b865c238f"
 
 S = "${WORKDIR}/git"
 

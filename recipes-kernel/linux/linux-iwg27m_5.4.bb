@@ -11,12 +11,12 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=bbea815ee2795b2f4230826c0c6b8814"
 
 DEPENDS += "lzop-native bc-native"
 
-KERNEL_BRANCH ?= "IWG27M-R4.0-REL0.2"
+KERNEL_BRANCH ?= "IWG27M-R4.5-REL0.2"
 LOCALVERSION = "-2.1.0"
 KERNEL_SRC ?= "git://github.com/iwavegit/linux-iwg27m.git;protocol=https"
 SRC_URI = "${KERNEL_SRC};branch=${KERNEL_BRANCH}"
 
-SRCREV = "52b69e8c17aa90eda28488ee2b0993bd33638069"
+SRCREV = "5a0a82a8c3b7694f6370b1a8613b4951e403aeb4"
 
 FILES_${KERNEL_PACKAGE_NAME}-base += "${nonarch_base_libdir}/modules/${KERNEL_VERSION}/modules.builtin.modinfo "
 
